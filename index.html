@@ -402,7 +402,7 @@
                 const name = isFemale
                     ? femaleNames[Math.floor(Math.random() * femaleNames.length)]
                     : maleNames[Math.floor(Math.random() * maleNames.length)];
-                const sum = getRandomInt(5000, 80000);
+                const sum = getRandomInt(5000, 50000);
                 if (!usedReviewSums.has(sum)) {
                     usedReviewSums.add(sum);
                     return {
@@ -449,7 +449,7 @@
         }
 
         function scheduleReview() {
-            const interval = getRandomInt(1000, 3000);
+            const interval = getRandomInt(4000, 8000);
             setTimeout(() => {
                 addNewReview();
                 scheduleReview();
