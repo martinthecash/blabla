@@ -66,7 +66,7 @@
     flex-direction: column;
     justify-content: flex-start;
     position: relative;
-    padding-top: calc(env(safe-area-inset-top, 0px) + 20px); /* вот эта строка */
+    padding-top: calc(env(safe-area-inset-top, 0px) + 100px); /* вот эта строка */
 }
 .header {
     width: 100vw;
@@ -253,41 +253,41 @@
             color: #e2e2e2;
             font-family: 'halvar', Arial, sans-serif;
         }
-        .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100vw;
-            background: linear-gradient(135deg, #00aaff 0%, #005f99 100%);
-            border-top: 1.5px solid rgba(255,255,255,0.13);
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            padding: 0;
-            z-index: 999;
-            height: 64px;
-            box-shadow: 0 -4px 24px 0 rgba(0, 170, 255, 0.10);
-        }
-        .nav-btn {
-            flex: 1 1 50%;
-            margin: 0 8px;
-            padding: 14px 0;
-            background: rgba(255,255,255,0.13);
-            border: none;
-            border-radius: 18px;
-            color: #fff;
-            font-size: 1.1rem;
-            font-family: 'Intro', Arial, sans-serif;
-            font-weight: bold;
-            letter-spacing: 0.5px;
-            cursor: pointer;
-            transition: background 0.2s, color 0.2s;
-            outline: none;
-        }
-        .nav-btn.active, .nav-btn:active {
-            background: linear-gradient(135deg, #00d4ff 0%, #4a90e2 100%);
-            color: #fff;
-        }
+.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100vw;
+    background: linear-gradient(135deg, #00aaff 0%, #005f99 100%);
+    border-top: 1.5px solid rgba(255,255,255,0.13);
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 0;
+    z-index: 999;
+    height: 90px;
+    box-shadow: 0 -4px 24px 0 rgba(0, 170, 255, 0.10);
+}
+.nav-btn {
+    flex: 1 1 50%;
+    margin: 0 8px;
+    padding: 26px 0;
+    background: rgba(255,255,255,0.13);
+    border: none;
+    border-radius: 22px;
+    color: #fff;
+    font-size: 1.4rem;
+    font-family: 'Intro', Arial, sans-serif;
+    font-weight: bold;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+    outline: none;
+}
+.nav-btn.active, .nav-btn:active {
+    background: linear-gradient(135deg, #00d4ff 0%, #4a90e2 100%);
+    color: #fff;
+}
         @media (max-width: 600px) {
             .header-title {
                 font-size: 1.2rem;
@@ -304,14 +304,15 @@
             .header {
                 min-height: 58px;
             }
-            .bottom-nav {
-                height: 56px;
-            }
-            .nav-btn {
-                font-size: 1rem;
-                border-radius: 12px;
-                padding: 10px 0;
-            }
+    .bottom-nav {
+        height: 80px;
+    }
+    .nav-btn {
+        font-size: 1.2rem;
+        padding: 20px 0;
+        border-radius: 16px;
+    }
+
             .review-avatar {
                 width: 32px;
                 height: 32px;
