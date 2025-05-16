@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Последние выигрыши</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        @font-face {
+            font-family: 'Intro';
+            src: url('fonts/intro.otf') format('opentype');
+            font-weight: normal;
+            font-style: normal;
+        }
+        @font-face {
+            font-family: 'halvar';
+            src: url('fonts/halvar_breitschrift.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            font-family: 'Intro', Arial, sans-serif;
+            background: linear-gradient(135deg, #00aaff 0%, #005f99 100%);
+            min-height: 100vh;
+            width: 100vw;
+            overflow-x: hidden;
+        }
+        body {
+            height: 100vh;
+            min-height: 100vh;
+            width: 100vw;
+        }
+        .container {
+            box-sizing: border-box;
+            width: 100vw;
+            height: 100vh;
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+            background: rgba(43, 58, 103, 0.50);
+            border-radius: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            position: relative;
+        }
+        .header {
+            width: 100vw;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: transparent;
+            color: #fff;
+            min-height: 82px;
+            padding: 0;
+        }
+.header-title {
+    font-size: 2rem;
+    font-weight: bold;
+    letter-spacing: 1.5px;
+    text-align: center;
+    padding: 1.1rem 2.2rem;
+    border-radius: 22px;
+    background: rgba(255,255,255,0.08);
+    box-shadow: 0 4px 32px 0 rgba(0, 170, 255, 0.12);
+    margin-top: 18px;
+    margin-bottom: 18px;
+    text-shadow: 0 2px 8px rgba(0, 170, 255, 0.20), 0 1px 0 #005f99;
+    border: 1.5px solid rgba(255,255,255,0.13);
+    user-select: none;
+    font-family: 'Intro', Arial, sans-serif;
+    min-width: 270px;      /* Добавлено: минимальная ширина */
+    max-width: 370px;      /* Можно увеличить при желании */
+    width: 100%;
+    display: inline-block; /* Сохраняет форму */
+    white-space: nowrap;   /* Не переносить текст */
+    box-sizing: border-box;
+}
+
+.main-content {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    width: 100vw;
+    overflow-y: auto;
+}
+
+        .wins-container, .reviews-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            width: 100vw;
+            box-sizing: border-box;
+            padding-bottom: 80px;
+        }
+.wins-container {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: 100vw;
+    box-sizing: border-box;
+    padding-bottom: 80px; /* чтобы не наезжать на нижнее меню */
+    overflow-y: auto;
+    align-items: center; /* чтобы плашки были по центру */
+}
+.win-item {
+    box-sizing: border-box;
+    background: linear-gradient(135deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.08) 100%);
+    border-radius: 20px;
+    padding: 16px 18px;
+    display: flex;
+    align-items: center;
+    border: 1.5px solid rgba(255,255,255,0.22);
+    box-shadow: 0 8px 32px 0 rgba(0, 170, 255, 0.17);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    animation: fadeIn 0.5s ease-in;
+    max-width: 600px;
+    width: calc(100% - 24px);
+    margin: 8px auto;
+    position: relative;
+    transition: box-shadow 0.2s;
+}
+
+        .win-item::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            border-radius: 20px;
+            padding: 2px;
+            background: linear-gradient(135deg, #00d4ff 0%, #4a90e2 100%);
+            -webkit-mask: 
+                linear-gradient(#fff 0 0) content-box, 
+                linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.45;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px);}
+            to { opacity: 1; transform: translateY(0);}
+        }
+        .game-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 12px;
+            margin-right: 16px;
+            object-fit: cover;
+            background: #fff;
+            box-shadow: 0 2px 8px 0 rgba(0,0,0,0.12);
+            z-index: 1;
+        }
+        .win-details {
+            display: flex;
+            flex-direction: column;
+            z-index: 1;
+        }
+        .user-id {
+            color: #e2e2e2;
+            font-size: 15px;
+            margin-bottom: 4px;
+            font-family: 'halvar', Arial, sans-serif;
+        }
+        .win-amount {
+            font-size: 20px;
+            font-weight: bold;
+            color: #fff;
+            font-family: 'Intro', Arial, sans-serif;
+        }
+        .currency {
+            font-size: 18px;
+            color: #00d4ff;
+            margin-left: 2px;
+            font-family: Arial, sans-serif;
+        }
+        .reviews-list {
+            padding-top: 0;
+            padding-bottom: 80px;
+        }
+        .review-item {
+            background: rgba(255,255,255,0.12);
+            border-radius: 15px;
+            padding: 12px 16px 12px 12px;
+            margin: 8px 12px;
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255,255,255,0.18);
+            font-size: 14px;
+            color: #fff;
+            box-shadow: 0 4px 16px 0 rgba(0, 170, 255, 0.10);
+            max-width: 600px;
+            margin-left: 12px;
+            margin-right: 12px;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+        .review-item.fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        .review-avatar {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #00aaff 0%, #4a90e2 100%);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.7rem;
+            font-weight: bold;
+            flex-shrink: 0;
+            box-shadow: 0 2px 8px 0 rgba(0,0,0,0.10);
+            margin-top: 2px;
+        }
+        .review-content {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .review-name {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 2px;
+            font-family: 'Intro', Arial, sans-serif;
+        }
+        .review-text {
+            font-size: 1.07rem;
+            color: #e2e2e2;
+            font-family: 'halvar', Arial, sans-serif;
+        }
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100vw;
+            background: linear-gradient(135deg, #00aaff 0%, #005f99 100%);
+            border-top: 1.5px solid rgba(255,255,255,0.13);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 0;
+            z-index: 999;
+            height: 64px;
+            box-shadow: 0 -4px 24px 0 rgba(0, 170, 255, 0.10);
+        }
+        .nav-btn {
+            flex: 1 1 50%;
+            margin: 0 8px;
+            padding: 14px 0;
+            background: rgba(255,255,255,0.13);
+            border: none;
+            border-radius: 18px;
+            color: #fff;
+            font-size: 1.1rem;
+            font-family: 'Intro', Arial, sans-serif;
+            font-weight: bold;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s;
+            outline: none;
+        }
+        .nav-btn.active, .nav-btn:active {
+            background: linear-gradient(135deg, #00d4ff 0%, #4a90e2 100%);
+            color: #fff;
+        }
+        @media (max-width: 600px) {
+            .header-title {
+                font-size: 1.2rem;
+                padding: 0.7rem 1rem;
+                border-radius: 12px;
+                margin-top: 12px;
+                margin-bottom: 12px;
+            }
+            .win-item, .review-item {
+                padding: 10px 2vw;
+                margin-left: 8px;
+                margin-right: 8px;
+            }
+            .header {
+                min-height: 58px;
+            }
+            .bottom-nav {
+                height: 56px;
+            }
+            .nav-btn {
+                font-size: 1rem;
+                border-radius: 12px;
+                padding: 10px 0;
+            }
+            .review-avatar {
+                width: 32px;
+                height: 32px;
+                font-size: 1.3rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <script>
+        if (window.Telegram && window.Telegram.WebApp) {
+            if (window.Telegram.WebApp.ready) window.Telegram.WebApp.ready();
+            if (window.Telegram.WebApp.expand) window.Telegram.WebApp.expand();
+        }
+    </script>
+    <div class="container">
+        <div class="header">
+            <div class="header-title" id="mainTitle">Последние выигрыши</div>
+        </div>
+        <div class="main-content">
+            <div class="wins-container" id="winsContainer"></div>
+            <div class="reviews-list" id="reviewsList" style="display:none"></div>
+        </div>
+        <div class="bottom-nav">
+            <button class="nav-btn active" id="btnWins">Выигрыши</button>
+            <button class="nav-btn" id="btnReviews">Отзывы</button>
+        </div>
+    </div>
+    <script>
+        // Картинки игр
+        const gameImages = Array.from({length: 20}, (_, i) => `${i+1}.png`);
+        const weights = {};
+        gameImages.forEach(img => weights[img] = 1);
+        weights['13.png'] = 1.4;
+        weights['14.png'] = 1.25;
+        weights['4.png']  = 1.15;
+        weights['10.png'] = 1.25;
+        weights['19.png'] = 1.25;
+        const weightedImages = [];
+        for (const [img, weight] of Object.entries(weights)) {
+            const count = Math.round(weight * 100);
+            for (let i = 0; i < count; i++) {
+                weightedImages.push(img);
+            }
+        }
+        const MAX_WINS_DISPLAY = 5;
+
+        // 100 мужских и 100 женских имён (русские, казахские, узбекские, кыргызские, украинские и др.)
+        const maleNames = [
+            "Артём","Игорь","Владимир","Сергей","Денис","Алексей","Павел","Максим","Виктор","Даниил",
+            "Егор","Роман","Александр","Михаил","Николай","Владислав","Константин","Василий","Илья",
+            "Олег","Вадим","Юрий","Вячеслав","Григорий","Дмитрий","Евгений","Захар","Кирилл","Леонид",
+            "Марк","Никита","Пётр","Руслан","Станислав","Тимофей","Фёдор","Ярослав","Богдан","Виталий",
+            "Георгий","Андрей","Богдан","Дмитрий","Евгений","Иван","Кирилл","Максим","Николай","Олег",
+            "Павел","Роман","Сергей","Тарас","Юрий","Ярослав","Владислав","Виталий","Григорий",
+            "Азамат","Нурлан","Ерлан","Данияр","Марат","Тимур","Бекзат","Жанат","Алишер",
+            "Бахыт","Дамир","Ермек","Жасулан","Кайрат","Мухтар","Нуржан","Олжас","Рустам",
+            "Бахтиёр","Дониёр","Жасур","Комил","Мирзо","Нодир","Олим","Сардор",
+            "Тохир","Умар","Фарход","Хуршид","Шухрат","Эльдор","Янги","Зухриддин","Илхом","Жахонгир",
+            "Бек","Дастан","Ермек","Жаныбек","Кайрат","Марат","Омурбек","Санжар",
+            "Талант","Улан","Шамиль","Эрмек","Ырысбек","Жолдош","Кубат","Медет","Нурбек"
+        ];
+        const femaleNames = [
+            "Мария","Анастасия","Екатерина","Юлия","Ольга","Дарья","Анна","Елена","Татьяна","Светлана",
+            "Валерия","Ксения","Наталья","Ирина","Оксана","Полина","София","Вероника","Алина","Виктория",
+            "Евгения","Людмила","Надежда","Нина","Олеся","Раиса","Снежана","Тамара","Ульяна","Яна",
+            "Зоя","Алёна","Вера","Галина","Диана","Жанна","Зинаида","Инна","Карина","Лариса",
+            "Алина","Виктория","Галина","Дарина","Евгения","Жанна","Злата","Ирина","Катерина","Людмила",
+            "Марина","Наталья","Оксана","Полина","Светлана","Тамара","Ульяна","Яна","Зоя",
+            "Айгуль","Гульнар","Динара","Жанна","Зарина","Камиля","Ляззат","Мадина","Нурия","Оксана",
+            "Перизат","Райхан","Сауле","Тамара","Улжан","Фарида","Шолпан","Эльвира","Ясмин","Зухра",
+            "Гульнара","Дилфуза","Зухра","Лола","Малика","Нигина","Парвина","Сабина","Тахмина",
+            "Умеда","Феруза","Хуршида","Шахноза","Ясмина","Зарина","Малика","Нигина","Сабина",
+            "Айжан","Бактыгуль","Гульнара","Динара","Жылдыз","Клара","Ляззат","Мадина","Нурия","Оксана",
+            "Перизат","Райхан","Сауле","Тамара","Улжан","Фарида","Шолпан","Эльвира","Ясмин","Зухра"
+        ];
+
+        const reviewEmojis = ["👍","❤️","🚀","🤑","⚡️","🔥","💰","🏆"];
+        let usedReviewSums = new Set();
+        let allReviews = [];
+        const MAX_REVIEWS_DISPLAY = 20;
+
+        function generateUniqueReview() {
+            let attempts = 0;
+            while (attempts < 1000) {
+                const isFemale = Math.random() < 0.5;
+                const name = isFemale
+                    ? femaleNames[Math.floor(Math.random() * femaleNames.length)]
+                    : maleNames[Math.floor(Math.random() * maleNames.length)];
+                const sum = getRandomInt(1000, 50000);
+                if (!usedReviewSums.has(sum)) {
+                    usedReviewSums.add(sum);
+                    return {
+                        name,
+                        emoji: reviewEmojis[Math.floor(Math.random() * reviewEmojis.length)],
+                        text: `Сумма вывода: ${sum.toLocaleString('en-US')}₽`
+                    };
+                }
+                attempts++;
+            }
+            return {
+                name: "Пользователь",
+                emoji: reviewEmojis[Math.floor(Math.random() * reviewEmojis.length)],
+                text: `Сумма вывода: 15,000₽`
+            };
+        }
+
+        function createReviewElement({name, emoji, text}) {
+            const element = document.createElement('div');
+            element.className = 'review-item fade-in';
+            element.innerHTML = `
+                <div class="review-avatar">${emoji}</div>
+                <div class="review-content">
+                    <div class="review-name">${name}</div>
+                    <div class="review-text">${text}</div>
+                </div>
+            `;
+            setTimeout(() => {
+                element.classList.remove('fade-in');
+            }, 600);
+            return element;
+        }
+
+        function addNewReview() {
+            const review = generateUniqueReview();
+            const container = document.getElementById('reviewsList');
+            const newReviewElem = createReviewElement(review);
+            container.insertBefore(newReviewElem, container.firstChild);
+            allReviews.unshift(review);
+            if (container.children.length > MAX_REVIEWS_DISPLAY) {
+                container.removeChild(container.lastChild);
+                allReviews.pop();
+            }
+        }
+
+        function scheduleReview() {
+            const interval = getRandomInt(1000, 3000);
+            setTimeout(() => {
+                addNewReview();
+                scheduleReview();
+            }, interval);
+        }
+
+        function getRandomInt(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+        function generateRandomUserId() {
+            return `USER-${getRandomInt(100000, 999999)}`;
+        }
+        function formatAmount(amount) {
+            return amount.toLocaleString('en-US');
+        }
+        function generateRandomWinAmount() {
+            return formatAmount(getRandomInt(500, 33000));
+        }
+        function getRandomGameImage() {
+            return weightedImages[Math.floor(Math.random() * weightedImages.length)];
+        }
+        function createWinElement() {
+            const userId = generateRandomUserId();
+            const winAmount = generateRandomWinAmount();
+            const gameImage = getRandomGameImage();
+            const winElement = document.createElement('div');
+            winElement.className = 'win-item';
+            winElement.innerHTML = `
+                <img class="game-icon" src="img/games/${gameImage}" alt="Game Icon">
+                <div class="win-details">
+                    <div class="user-id">ID: ${userId}</div>
+                    <div class="win-amount">Выигрыш: ${winAmount} <span class="currency">₽</span></div>
+                </div>
+            `;
+            return winElement;
+        }
+        function addNewWin() {
+            const container = document.getElementById('winsContainer');
+            const newWin = createWinElement();
+            container.insertBefore(newWin, container.firstChild);
+            if (container.children.length > MAX_WINS_DISPLAY) {
+                container.removeChild(container.lastChild);
+            }
+        }
+        function getRandomInterval() {
+            return getRandomInt(1000, 3000);
+        }
+        function scheduleNextUpdate() {
+            const interval = getRandomInterval();
+            setTimeout(() => {
+                addNewWin();
+                scheduleNextUpdate();
+            }, interval);
+        }
+
+        function showWins() {
+            document.getElementById('winsContainer').style.display = '';
+            document.getElementById('reviewsList').style.display = 'none';
+            document.getElementById('btnWins').classList.add('active');
+            document.getElementById('btnReviews').classList.remove('active');
+            document.getElementById('mainTitle').textContent = 'Последние выигрыши';
+        }
+        function showReviews() {
+            document.getElementById('winsContainer').style.display = 'none';
+            document.getElementById('reviewsList').style.display = '';
+            document.getElementById('btnWins').classList.remove('active');
+            document.getElementById('btnReviews').classList.add('active');
+            document.getElementById('mainTitle').textContent = 'Последние отзывы';
+        }
+
+        function initialize() {
+            for (let i = 0; i < MAX_WINS_DISPLAY; i++) {
+                addNewWin();
+            }
+            scheduleNextUpdate();
+            for (let i = 0; i < 4; i++) { addNewReview(); }
+            scheduleReview();
+            document.getElementById('btnWins').onclick = showWins;
+            document.getElementById('btnReviews').onclick = showReviews;
+            showWins();
+        }
+
+        window.onload = initialize;
+    </script>
+</body>
+</html>
