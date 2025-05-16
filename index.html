@@ -5,7 +5,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Последние выигрыши</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+    <script>
+        function isMobileDevice() {
+            return /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+        }
+
+        const tg = window.Telegram.WebApp;
+        tg.ready();
+        if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
+            window._telegramUserId = tg.initDataUnsafe.user.id;
+        }
+
+        if (isMobileDevice()) {
+            tg.expand();
+            if (!tg.isFullscreen) {
+                tg.requestFullscreen().catch(() => {});
+            }
+        }
+    </script>
     <style>
+
         @font-face {
             font-family: 'Intro';
             src: url('fonts/intro.otf') format('opentype');
@@ -384,7 +404,7 @@
                 const name = isFemale
                     ? femaleNames[Math.floor(Math.random() * femaleNames.length)]
                     : maleNames[Math.floor(Math.random() * maleNames.length)];
-                const sum = getRandomInt(1000, 50000);
+                const sum = getRandomInt(5000, 80000);
                 if (!usedReviewSums.has(sum)) {
                     usedReviewSums.add(sum);
                     return {
