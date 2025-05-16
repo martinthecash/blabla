@@ -54,20 +54,20 @@
             min-height: 100vh;
             width: 100vw;
         }
-        .container {
-            box-sizing: border-box;
-            width: 100vw;
-            height: 100vh;
-            min-height: 100vh;
-            margin: 0;
-            padding: 0;
-            background: rgba(43, 58, 103, 0.50);
-            border-radius: 0;
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-start;
-            position: relative;
-        }
+.container {
+    box-sizing: border-box;
+    width: 100vw;
+    height: 100vh;
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+    background: rgba(43, 58, 103, 0.50);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    position: relative;
+    padding-top: calc(env(safe-area-inset-top, 0px) + 20px); /* вот эта строка */
+}
 .header {
     width: 100vw;
     display: flex;
