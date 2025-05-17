@@ -343,14 +343,14 @@
     </div>
     <script>
         // Картинки игр
-        const gameImages = Array.from({length: 20}, (_, i) => `${i+1}.png`);
+        const gameImages = Array.from({length: 21}, (_, i) => `${i+1}.png`);
         const weights = {};
         gameImages.forEach(img => weights[img] = 1);
-        weights['13.png'] = 1.4;
-        weights['14.png'] = 1.25;
-        weights['4.png']  = 1.15;
-        weights['10.png'] = 1.25;
-        weights['19.png'] = 1.25;
+        weights['1.png'] = 1.4;
+        weights['2.png'] = 1.25;
+        weights['3.png'] = 1.25;
+        weights['4.png'] = 1.25;
+        weights['5.png']  = 1.15;
         const weightedImages = [];
         for (const [img, weight] of Object.entries(weights)) {
             const count = Math.round(weight * 100);
